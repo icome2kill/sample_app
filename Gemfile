@@ -5,8 +5,10 @@ gem 'rails', '3.2.13'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-group :development, :test do gem 'sqlite3', '1.3.5'
+group :development do 
+	gem 'sqlite3', '1.3.5'
 	gem 'rspec-rails', '2.9.0'
+	gem 'guard-rspec'
 end
 # Gems used only for assets and not required # in production environments by default. 
 group :assets do
@@ -19,6 +21,11 @@ gem 'jquery-rails'
 
 group :test do
 	gem 'capybara', '1.1.2'
+	gem 'rspec-rails', '2.9.0'
+	gem 'rb-fsevent', :require => false
+	gem 'growl', '1.0.3'
+	gem 'spork'
+	gem 'guard-spork'
 end
 
 group :production do 
