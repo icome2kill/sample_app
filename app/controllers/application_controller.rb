@@ -7,4 +7,7 @@ class ApplicationController < ActionController::Base
     sign_out
     super
   end
+  if Rails.env.production? 
+    force_ssl
+  end
 end

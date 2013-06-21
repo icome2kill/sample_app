@@ -3,6 +3,9 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.13'
 gem 'bootstrap-sass', '2.0.0'
 gem 'bcrypt-ruby'
+gem 'faker', '1.0.1'
+gem 'will_paginate', '3.0.3'
+gem 'bootstrap-will_paginate', '0.0.6'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
@@ -20,6 +23,7 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'jquery-migrate-rails'
 
 group :test do
 	gem 'capybara', '1.1.2'
