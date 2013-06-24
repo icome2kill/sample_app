@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe "AuthenticatePages" do
   subject { page }
+  describe "before sign in" do
+    it { should_not have_link('Profile')}
+    it { should_not have_link('Setting')}
+  end
   describe "Signin page" do
     before { visit signin_path }
     it { should have_selector('h1', text: 'Sign in') }
@@ -24,6 +28,7 @@ describe "AuthenticatePages" do
       end
       it { should have_selector('title', text: user.name) }
       it { should have_link('Profile', href: user_path(user)) } 
+      it { should have_link('Setting', href: edit_user_path(user)) }
       it { should have_link('Sign out', href: signout_path) } 
       it { should have_link('Users', href: users_path) }
       it { should_not have_link('Sign in', href: signin_path) }
@@ -48,7 +53,15 @@ describe "AuthenticatePages" do
     end
   end
   describe "authorization" do
-
+    describe "as admin user" do
+      let(:admin) { FactoryGirl.create(:admin) }
+      before { sign_in admin }
+      describe "submitting a DELETE request to current user" do
+        it "shouldn't be able to do so" do
+          expect { delete user_path(admin) }.not_to change(User, :count).by(-1)
+        end
+      end
+    end
     describe "as non-admin user" do
       let(:user) { FactoryGirl.create(:user) }
       let(:non_admin) { FactoryGirl.create(:user) }
@@ -57,6 +70,14 @@ describe "AuthenticatePages" do
 
       describe "submitting a DELETE request to the Users#destroy action" do
         before { delete user_path(user) }
+        specify { response.should redirect_to(root_path) }
+      end
+      describe "trying to visit signup page via GET request to the User#new action" do
+        before { get signup_path }
+        specify { response.should redirect_to(root_path) }
+      end
+      describe "trying to register new account via PUT request to the Users#create action" do
+        before { put signup_path }
         specify { response.should redirect_to(root_path) }
       end
     end
@@ -94,7 +115,19 @@ describe "AuthenticatePages" do
           it "should render the desired protected page" do
             page.should have_selector('title', text: 'Edit user')
           end
-        end
+          describe "when signing in again" do
+            before do
+              delete signout_path
+              visit signin_path
+              fill_in "Email",    with: user.email
+              fill_in "Password", with: user.password
+              click_button "Sign in"
+            end
+            it "should render the default (profile) page" do
+              page.should have_selector('title', text: user.name)
+            end
+          end
+        end  
       end
     end
     describe "as wrong user" do
