@@ -14,9 +14,13 @@ describe "Static pages" do
     it_should_behave_like "All static pages"
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
+      let(:another) { FactoryGirl.create(:user) }
+      before(:all) do
+        20.times { FactoryGirl.create(:micropost, user: user, content: "Lorem blah blah ipsum") }
+      end
+      after(:all) {User.delete_all}
       before do
-        FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
-        FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+        FactoryGirl.create(:micropost, user: another, content: "Cant delete this")
         sign_in user
         visit root_path
       end
@@ -26,6 +30,16 @@ describe "Static pages" do
           page.should have_selector("li##{item.id}", text: item.content)
         end
       end
+      it { should have_selector('span', text: "#{user.microposts.count} microposts") }
+      #describe "pagination" do
+      #  it { should have_selector('pagination') }
+      #  it "should list each micropost feed" do
+      #    Micropost.paginate(page: 1).each do |m|
+      #      page.should have_selector('content', text: m.content)
+      #    end
+      #  end
+      #end
+      it { should_not have_link('delete', href: "microposts/#{another.microposts.last}")}
     end
   end
   describe "Help page" do
