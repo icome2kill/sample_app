@@ -40,6 +40,15 @@ describe "Static pages" do
       #  end
       #end
       it { should_not have_link('delete', href: "microposts/#{another.microposts.last}")}
+      describe "following/followers stats" do
+        let(:other_user) { FactoryGirl.create(:user) }
+        before do
+          other_user.follow!(@user)
+          visit root_path
+        end
+        it { should have_link("0 following", href: following_user_path) }
+        it { should have_link("1 followers", href: followers_user_path) }
+      end
     end
   end
   describe "Help page" do
