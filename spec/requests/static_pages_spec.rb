@@ -16,13 +16,17 @@ describe "Static pages" do
       let(:user) { FactoryGirl.create(:user) }
       let(:another) { FactoryGirl.create(:user) }
       before do
-        FactoryGirl.create(:micropost, user: another, content: "Cant delete this")
+        35.times { user.microposts.create!(content: "Blah Blah BLah blah") }
+        FactoryGirl.create(:micropost, user: another, content: "Can't see this")
         sign_in user
         visit root_path
       end
-
+      after(:all) { Micropost.delete_all }
+      describe "paginate" do
+        it { should have_selector('div.pagination') }
+      end
       it "should render the user's feed" do
-        user.feed.each do |item|
+        user.feed.paginate(page: 1).each do |item|
           page.should have_selector("li##{item.id}", text: item.content)
         end
       end
