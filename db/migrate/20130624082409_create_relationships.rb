@@ -8,6 +8,6 @@ class CreateRelationships < ActiveRecord::Migration
     end
     add_index :relationships, :followed_id
     add_index :relationships, :follower_id
-    add_index :relationships, [:followed_id, :follower_id], unique: trues
+    add_index :relationships, [:followed_id, :follower_id], unique: true
   end
 end
