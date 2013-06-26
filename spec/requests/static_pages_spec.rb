@@ -15,10 +15,6 @@ describe "Static pages" do
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
       let(:another) { FactoryGirl.create(:user) }
-      before(:all) do
-        20.times { FactoryGirl.create(:micropost, user: user, content: "Lorem blah blah ipsum") }
-      end
-      after(:all) {User.delete_all}
       before do
         FactoryGirl.create(:micropost, user: another, content: "Cant delete this")
         sign_in user
@@ -31,23 +27,16 @@ describe "Static pages" do
         end
       end
       it { should have_selector('span', text: "#{user.microposts.count} microposts") }
-      #describe "pagination" do
-      #  it { should have_selector('pagination') }
-      #  it "should list each micropost feed" do
-      #    Micropost.paginate(page: 1).each do |m|
-      #      page.should have_selector('content', text: m.content)
-      #    end
-      #  end
-      #end
       it { should_not have_link('delete', href: "microposts/#{another.microposts.last}")}
-      describe "following/followers stats" do
+      describe "follower/following counts" do
         let(:other_user) { FactoryGirl.create(:user) }
         before do
-          other_user.follow!(@user)
+          other_user.follow!(user)
           visit root_path
         end
-        it { should have_link("0 following", href: following_user_path) }
-        it { should have_link("1 followers", href: followers_user_path) }
+
+        it { should have_link("0 following", href: following_user_path(user)) }
+        it { should have_link("1 followers", href: followers_user_path(user)) }
       end
     end
   end

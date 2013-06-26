@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
   before_save { self.email.downcase! }
   before_save { create_remember_token }
   def feed
-    Micropost.where('user_id = ?', id)
+    Micropost.from_users_followed_by(self)
   end
   def following?(other_user)
     relationships.find_by_followed_id(other_user.id)
