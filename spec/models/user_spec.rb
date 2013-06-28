@@ -146,6 +146,21 @@ describe User do
     before { @user.save }
     its(:remember_token) { should_not be_blank }
   end
+  describe "relationship associations" do
+    let(:followed_user) { FactoryGirl.create(:user) }
+    before do
+      @user.save
+      @user.follow!(followed_user)
+    end
+    it "should destroy asscociated relationships" do
+      relationships = @user.relationships.dup
+      @user.destroy
+      relationships.should_not be_empty
+      relationships.each do |r|
+        Relationship.find_by_id(r.id).should be_nil
+      end
+    end
+  end
   describe "micropost associations" do
 
     before { @user.save }

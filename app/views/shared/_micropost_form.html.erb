@@ -1,5 +1,17 @@
 <%= form_for(@micropost) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>
+  <script>
+  	function countdown() {
+  		remaining = <%= Micropost.validators_on(:content)[1].options[:maximum] %> - $("#micropost_content").val().length;
+	  	$("#countdown").text(remaining);
+  	}
+	$(document).ready(function(){
+		countdown();
+  		$("#micropost_content").keypress(countdown);
+  		$("#micropost_content").keyup(countdown);
+	});
+  </script>
+  <p>Character left: <span id = "countdown"><%= Micropost.validators_on(:content)[1].options[:maximum] %></span></p>
   <div class="field">
     <%= f.text_area :content, placeholder: "Compose new micropost..." %>
   </div>
